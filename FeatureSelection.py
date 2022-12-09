@@ -2,7 +2,6 @@ import pandas as pd
 import re, nltk
 from PreProcess import PreProcess
 from textblob import TextBlob
-from nltk.corpus import stopwords
 
 
 class FeatureSelection:
@@ -55,19 +54,6 @@ class FeatureSelection:
             for j, word in enumerate(words):
                 if abs(TextBlob(word).sentiment.subjectivity) > 0.3: 
                     filtered_words.append(words[j])
-            phrases[i] = ' '.join(filtered_words)
-        df['Phrase'] = phrases
-        return df
-
-    def filter_by_stopwords(self,df: pd.DataFrame):
-        stopword_list = set(stopwords.words('english'))
-        phrases = df['Phrase'].to_list()
-        for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
-            filtered_words = []
-            for j, word in enumerate(words):
-                if word not in stopword_list:
-                    filtered_words.append(words[j].strip())
             phrases[i] = ' '.join(filtered_words)
         df['Phrase'] = phrases
         return df

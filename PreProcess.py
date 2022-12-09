@@ -2,6 +2,7 @@ from typing import List
 import pandas as pd
 import string
 from nltk.stem.snowball import SnowballStemmer
+from nltk.corpus import stopwords
 
 class PreProcess:
     def __init__(self,train_path,dev_path,test_path,classes) -> None:
@@ -44,12 +45,24 @@ class PreProcess:
         df['Phrase'] = phrases
         return df
     
+    def apply_stopwords(self,df: pd.DataFrame):
+        stopword_list = set(stopwords.words('english'))
+        phrases = df['Phrase'].to_list()
+        for i, sentence in enumerate(phrases):
+            words = sentence.split(' ')
+            filtered_words = []
+            for j, word in enumerate(words):
+                if word not in stopword_list:
+                    filtered_words.append(words[j].strip())
+            phrases[i] = ' '.join(filtered_words)
+        df['Phrase'] = phrases
+        return df
 
     def return_processed_dfs(self) -> List[pd.DataFrame]:
         dfs = [self.train_df,self.dev_df,self.test_df]
         for i, df in enumerate(dfs):
             dfs[i] = self.process(df,'Phrase')
-            # dfs[i] = self.apply_stopwords(dfs[i])
+            dfs[i] = self.apply_stopwords(dfs[i])
             if self.classes == 3 and i != 2:
                 dfs[i] = self.map_5_to_3(dfs[i])
         return dfs
