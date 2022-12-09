@@ -1,7 +1,7 @@
 import pandas as pd
-import re, nltk
-from PreProcess import PreProcess
+import nltk
 from textblob import TextBlob
+import numpy as np
 
 
 class FeatureSelection:
@@ -9,7 +9,7 @@ class FeatureSelection:
         self.features = features
         self.tag_dict = {'adjective':['JJ','JJR','JJS'],'noun':['NN','NNS','NNP','NNPS'],'adverb':['RB','RBS','RBR','RP'],'verb':['VB','VBD','VBG','VBN','VBP','VBZ']}
         self.tag_set = self.feature_to_set()
-    
+
     def feature_to_set(self):
         tag_set = []
         for feature in self.features:
@@ -18,7 +18,7 @@ class FeatureSelection:
         return tag_set
     
     def get_tagged_phrases(self,df):
-        tag = lambda x: nltk.pos_tag(x.split(' '))
+        tag = lambda x: nltk.pos_tag(x.split())
         tagged_phrases = list(map(tag,df['Phrase'].to_list()))
         return tagged_phrases
     
@@ -37,7 +37,7 @@ class FeatureSelection:
     def filter_by_polarity(self,df: pd.DataFrame):
         phrases = df['Phrase'].to_list()
         for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
+            words = sentence.split()
             filtered_words = []
             for j, word in enumerate(words):
                 if abs(TextBlob(word).sentiment.polarity) != 0: 
@@ -49,7 +49,7 @@ class FeatureSelection:
     def filter_by_subjectivity(self,df: pd.DataFrame):
         phrases = df['Phrase'].to_list()
         for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
+            words = sentence.split()
             filtered_words = []
             for j, word in enumerate(words):
                 if TextBlob(word).sentiment.subjectivity > 0: 
@@ -63,7 +63,7 @@ class FeatureSelection:
         # in the form of [(word,subj_scrore)]
         subjective = []
         for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
+            words = sentence.split()
             for j, word in enumerate(words):
                 subjective.append((word,TextBlob(word).sentiment.subjectivity))
         subjective = list(sorted(subjective,key=lambda x: x[1], reverse=True))
@@ -73,9 +73,9 @@ class FeatureSelection:
     def filter_by_most_subjective(self,df: pd.DataFrame):
         phrases = df['Phrase'].to_list()
         top_subj = self.get_most_subjective(df)
-        top_subj = set(top_subj[:int(len(top_subj)*0.62)])
+        top_subj = set(top_subj[:int(len(top_subj)*0.74)])
         for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
+            words = sentence.split()
             filtered_words = []
             for j, word in enumerate(words):
                 if word in top_subj: 

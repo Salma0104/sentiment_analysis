@@ -2,9 +2,7 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
-from PreProcess import PreProcess
-from FeatureSelection import FeatureSelection
-from NaiveBayesClassifier import NaiveBayesClassifier
+
 
 class Evaluate:
     def __init__(self,predictions,ground_truths,classes) -> None:
@@ -31,4 +29,9 @@ class Evaluate:
         plt.show()
 
         return cm_vis
+    
+    def get_accuracy(self):
+        tp = len(self.pred[self.pred['Sentiment'] == self.gt['Sentiment']])
+        #print(len(self.pred[(self.pred['Sentiment'] == 1)]))
+        return tp/len(self.pred)
 

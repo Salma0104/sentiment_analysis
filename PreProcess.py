@@ -15,12 +15,9 @@ class PreProcess:
         return pd.read_csv(file_path, sep='\t')
     
     def process(self,df: pd.DataFrame, column: str) -> pd.DataFrame:
-        # excludes exclamation mark
         punc = string.punctuation[1:]
         # remove all punctiation
-        df[column] = df[column].astype(str).str.translate(str.maketrans('', '', punc))
-        #change double space to single space
-        df[column] = df[column].astype(str).str.replace('  ',' ')
+        df[column] = df[column].astype(str).str.translate(str.maketrans('', '',punc))
         # make text lowercase
         df[column] = df[column].astype(str).str.lower()
 
@@ -34,10 +31,10 @@ class PreProcess:
         return df
     
     def apply_stemming(self, df: pd.DataFrame):
-        stemmer = SnowballStemmer("english")
+        stemmer = SnowballStemmer("english") + []
         phrases = df['Phrase'].to_list()
         for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
+            words = sentence.split()
             filtered_words = []
             for j, word in enumerate(words):
                 filtered_words.append(stemmer.stem(word))
@@ -49,7 +46,7 @@ class PreProcess:
         stopword_list = set(stopwords.words('english'))
         phrases = df['Phrase'].to_list()
         for i, sentence in enumerate(phrases):
-            words = sentence.split(' ')
+            words = sentence.split()
             filtered_words = []
             for j, word in enumerate(words):
                 if word not in stopword_list:

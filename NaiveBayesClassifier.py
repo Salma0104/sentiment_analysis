@@ -1,11 +1,5 @@
-import math
-import re, nltk
-from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
 import pandas as pd
 import numpy as np
-from PreProcess import PreProcess
-from FeatureSelection import FeatureSelection
 
 class NaiveBayesClassifier:
     def __init__(self,train_df,classes) -> None:
@@ -33,7 +27,7 @@ class NaiveBayesClassifier:
         for i in range(self.classes):
             mask = self.train_df['Sentiment'] == i
             for sentence in self.train_df[mask]['Phrase'].to_list():
-                words = sentence.split(' ')
+                words = sentence.split()
                 for word in words:
                     count = class_count_dicts[i].get(word)
                     if not count:
@@ -56,11 +50,13 @@ class NaiveBayesClassifier:
     def classify_phrase(self,phrase):
         prosteriors = [1]*self.classes
         for i in range(self.classes):
-            words = phrase.split(' ')
+            words = phrase.split()
             for word in words:
                 if word in self.distinct_words and word != '':
-                    prosterior = self.get_likelihood(word,i) * self.priors.get(i)
+                    prosterior = self.get_likelihood(word,i) #* self.priors.get(i)
                     prosteriors[i] *= prosterior
+        # print(prosteriors)
+        # print(np.argmax(prosteriors))
         return np.argmax(prosteriors)
     
     def classify(self,df):
@@ -80,13 +76,6 @@ class NaiveBayesClassifier:
         results = pd.DataFrame(results)
         return results
 
-# pp = PreProcess('./moviereviews/train.tsv', './moviereviews/dev.tsv','./moviereviews/test.tsv',5)
-# dfs = pp.return_processed_dfs()   
-
-# nb = NaiveBayesClassifier(dfs[0],5)
-# print(nb.index)
-# print(nb.class_word_count)
-# # res = nb.classify(dfs[1])
 
 
         
