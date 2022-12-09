@@ -40,7 +40,7 @@ class FeatureSelection:
             words = sentence.split(' ')
             filtered_words = []
             for j, word in enumerate(words):
-                if TextBlob(word).sentiment.polarity != 0: 
+                if abs(TextBlob(word).sentiment.polarity) != 0: 
                     filtered_words.append(words[j])
             phrases[i] = ' '.join(filtered_words)
         df['Phrase'] = phrases
@@ -52,7 +52,33 @@ class FeatureSelection:
             words = sentence.split(' ')
             filtered_words = []
             for j, word in enumerate(words):
-                if abs(TextBlob(word).sentiment.subjectivity) > 0.3: 
+                if TextBlob(word).sentiment.subjectivity > 0: 
+                    filtered_words.append(words[j])
+            phrases[i] = ' '.join(filtered_words)
+        df['Phrase'] = phrases
+        return df
+    
+    def get_most_subjective(self, df: pd.DataFrame):
+        phrases = df['Phrase'].to_list()
+        # in the form of [(word,subj_scrore)]
+        subjective = []
+        for i, sentence in enumerate(phrases):
+            words = sentence.split(' ')
+            for j, word in enumerate(words):
+                subjective.append((word,TextBlob(word).sentiment.subjectivity))
+        subjective = list(sorted(subjective,key=lambda x: x[1], reverse=True))
+        subjective_words = [x[0] for x in subjective]
+        return subjective_words
+    
+    def filter_by_most_subjective(self,df: pd.DataFrame):
+        phrases = df['Phrase'].to_list()
+        top_subj = self.get_most_subjective(df)
+        top_subj = set(top_subj[:int(len(top_subj)*0.62)])
+        for i, sentence in enumerate(phrases):
+            words = sentence.split(' ')
+            filtered_words = []
+            for j, word in enumerate(words):
+                if word in top_subj: 
                     filtered_words.append(words[j])
             phrases[i] = ' '.join(filtered_words)
         df['Phrase'] = phrases

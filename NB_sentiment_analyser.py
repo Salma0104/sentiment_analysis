@@ -64,19 +64,14 @@ def main():
         f_dev = dfs[1]
     else:
         fs = FeatureSelection(['adjective','noun','verb','adverb'])
-        f_train = fs.filter_by_features(dfs[0])
-        f_dev = fs.filter_by_features(dfs[1])
-
+        # # f_train = fs.filter_by_features(dfs[0])
         # f_train = fs.filter_by_polarity(dfs[0])
-        # f_dev = fs.filter_by_polarity(dfs[1])
+        # #f_train = fs.filter_by_subjectivity(dfs[0])
+        f_dev = dfs[1]
+        f_train = dfs[0]
+        f_words = fs.get_most_subjective(dfs[0])
 
-        # f_train = fs.filter_by_subjectivity(dfs[0])
-        # f_dev = fs.filter_by_subjectivity(dfs[1])
-
-        f_train = fs.filter_by_features(dfs[0])
-        f_dev = fs.filter_by_features(dfs[1])
-
-    nb_classifier = NaiveBayesClassifier(f_train,number_classes)
+    nb_classifier = NaiveBayesClassifier(f_train,number_classes,True,f_words)
     results = nb_classifier.classify(f_dev)
 
     if output_files:
