@@ -5,11 +5,29 @@ import matplotlib.pyplot as plt
 
 
 class Evaluate:
+
+    ''' Evaluates the performance of a prediction
+        
+        Args:
+            pred (pd.DataFrame): A pandas dataframe containing the sentiment 
+                prediction for each phrase/sentence 
+            gt (pd.DataFrame): A pandas dataframe containing the sentiment 
+                ground truth for each phrase/sentence 
+            classes (int): An integer denoting the number of classes. 5 or 3
+        
+        Attributes:
+            pred (pd.DataFrame): A pandas dataframe containing the sentiment 
+                prediction for each phrase/sentence 
+            gt (pd.DataFrame): A pandas dataframe containing the sentiment 
+                ground truth for each phrase/sentence 
+            classes (int): An integer denoting the number of classes. 5 or 3
+    '''
     def __init__(self,predictions,ground_truths,classes) -> None:
         self.pred = predictions
         self.gt = ground_truths
         self.classes = classes
     
+    ''' Returns the F1 score for the pred DataFrame'''
     def get_f1(self):
         all_f1 = []
         for i in range(self.classes):
@@ -20,6 +38,7 @@ class Evaluate:
             all_f1.append(f1)
         return sum(all_f1) / self.classes
 
+    ''' Plots the confusion matrix for the pred and gt'''
     def get_confusion(self):
         matrix = np.zeros((self.classes,self.classes))
         for i in range(self.classes):
@@ -28,10 +47,8 @@ class Evaluate:
         cm_vis = sns.heatmap(matrix, annot=True, cmap='Blues', fmt='.3g')
         plt.show()
 
-        return cm_vis
-    
+    ''' Returns the accuracy of predictions'''
     def get_accuracy(self):
         tp = len(self.pred[self.pred['Sentiment'] == self.gt['Sentiment']])
-        #print(len(self.pred[(self.pred['Sentiment'] == 1)]))
         return tp/len(self.pred)
 
